@@ -1,6 +1,7 @@
 module Main exposing (main)
 
 import Browser
+import Browser.Events
 import Html exposing (Html, a, div, input, li, span, text, textarea, ul)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -16,7 +17,7 @@ type alias Model =
     , text : String
     , fontSize : String
     , speed : Int
-    , offset : Int
+    , offset : Float
     }
 
 
@@ -26,7 +27,11 @@ initialModel =
     , text = ""
     , fontSize = "24"
     , speed = 0
-    , offset = 0 }
+    , offset = 0.0 }
+
+init : () -> (Model, Cmd Msg)
+init _ =
+    ( initialModel, Cmd.none )
 
 
 type Msg
@@ -34,14 +39,15 @@ type Msg
     | UpdateText String
     | ChangeFontSize String
     | ChangeSpeed String
+    | UpdateFrame Float
 
-toTopAttribute : Int -> String
+toTopAttribute : Float -> String
 toTopAttribute off =
-    (String.fromInt off) ++ "px"
+    (String.fromInt (floor off)) ++ "px"
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-    case msg of
+  ( case msg of
         ChangeMode mode ->
             { model | editMode = mode }
         UpdateText txt ->
@@ -50,6 +56,9 @@ update msg model =
             { model | fontSize = s }
         ChangeSpeed s ->
             { model | speed = (String.toInt s |> Maybe.withDefault 0) }
+        UpdateFrame d ->
+            { model | offset = model.offset + d * (toFloat model.speed) / 1000 }
+  , Cmd.none )
 
 
 view : Model -> Html Msg
@@ -101,7 +110,7 @@ renderNavs model =
                                  [ text " Speed: "]
                           ]
                     , input [ type_ "number"
-                            , Html.Attributes.min "1"
+                            , Html.Attributes.min "0"
                             , Html.Attributes.max "100"
                             , value (String.fromInt model.speed)
                             , onInput ChangeSpeed
@@ -146,9 +155,16 @@ renderTextContent model =
                            [ text model.text ]
                 ]
 
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Browser.Events.onAnimationFrameDelta UpdateFrame
+
 main =
-    Browser.sandbox
-        { init = initialModel
+    Browser.element
+        { init = init
         , view = view
         , update = update
+        , subscriptions = subscriptions
         }

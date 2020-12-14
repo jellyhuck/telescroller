@@ -24,6 +24,7 @@ type alias Model =
     , speed : Int
     , offset : Float
     , pauseMode : PauseModes
+    , padding : String
     }
 
 
@@ -35,6 +36,7 @@ initialModel =
     , speed = 0
     , offset = 0.0
     , pauseMode = Pause
+    , padding = "1"
     }
 
 init : () -> (Model, Cmd Msg)
@@ -43,13 +45,14 @@ init _ =
 
 
 type Msg
-    = ChangeMode EditModes
+    = ChangeEditMode EditModes
     | UpdateText String
     | ChangeFontSize String
     | ChangeSpeed String
     | UpdateFrame Float
     | ChangePauseMode PauseModes
     | ResetTele
+    | ChangePadding String
 
 toTopAttribute : Float -> String
 toTopAttribute off =
@@ -63,11 +66,11 @@ buttonClass t isOn =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   ( case msg of
-        ChangeMode mode ->
+        ChangeEditMode mode ->
             { model | editMode = mode }
         UpdateText txt ->
             { model | text = txt }
-        ChangeFontSize s  ->
+        ChangeFontSize s ->
             { model | fontSize = s }
         ChangeSpeed s ->
             { model | speed = (String.toInt s |> Maybe.withDefault 0) }
@@ -79,6 +82,8 @@ update msg model =
             { model | pauseMode = m }
         ResetTele ->
             { model | offset = 0, pauseMode = Pause }
+        ChangePadding p ->
+            { model | padding = p }
   , Cmd.none )
 
 
@@ -92,11 +97,11 @@ view model =
 
 renderNavs : Model -> Html Msg
 renderNavs model =
-    ul [ class "nav nav-pills p-1" ]
+    ul [ class "nav nav-pills p-1 ml-1" ]
         [ li [ class "nav-item" ]
             [ a
                 [ class "nav-link"
-                , onClick (ChangeMode Tele)
+                , onClick (ChangeEditMode Tele)
                 , classList [ ( "active", model.editMode == Tele ) ]
                 ]
                 [ text "Tele" ]
@@ -104,7 +109,7 @@ renderNavs model =
         , li [ class "nav-item" ]
             [ a
                 [ class "nav-link"
-                , onClick (ChangeMode Edit)
+                , onClick (ChangeEditMode Edit)
                 , classList [ ( "active", model.editMode == Edit ) ]
                 ]
                 [ text "Edit" ]
@@ -139,6 +144,21 @@ renderNavs model =
                             []
                     ]
               ]
+          , li []
+               [ div [ class "input-group mx-1" ]
+                     [ div [ class "input-group-prepend" ]
+                           [ span [ class "input-group-text" ]
+                                  [ text " Margin: "]
+                           ]
+                     , input [ type_ "number"
+                             , Html.Attributes.min "0"
+                             , Html.Attributes.max "50"
+                             , value model.padding
+                             , onInput ChangePadding
+                             ]
+                             []
+                     ]
+               ]
           , button
               [ class ("btn mx-1 " ++
                        (buttonClass "primary" (model.pauseMode == Play)))
@@ -174,7 +194,12 @@ renderTextContent model =
                                  , style "height" "90%"
                                  , style "color" "white"
                                  , style "border" "none"
+                                 , style "overflow" "auto"
+                                 , style "outline" "none"
+                                 , style "resize" "none"
+                                 , style "box-shadow" "none"
                                  , style "position" "relative"
+                                 , style "margin-left" (model.padding ++ "px")
                                  , style "top" (toTopAttribute model.offset)
                                  , readonly True
                                  ]

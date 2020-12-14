@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Browser.Events
-import Html exposing (Html, a, div, input, li, span, text, textarea, ul)
+import Html exposing (Html, a, button, div, input, li, span, text, textarea, ul)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 
@@ -12,12 +12,18 @@ type EditModes
     | Tele
 
 
+type PauseModes
+    = Pause
+    | Play
+
+
 type alias Model =
     { editMode : EditModes
     , text : String
     , fontSize : String
     , speed : Int
     , offset : Float
+    , pauseMode : PauseModes
     }
 
 
@@ -27,7 +33,9 @@ initialModel =
     , text = ""
     , fontSize = "24"
     , speed = 0
-    , offset = 0.0 }
+    , offset = 0.0
+    , pauseMode = Pause
+    }
 
 init : () -> (Model, Cmd Msg)
 init _ =
@@ -40,10 +48,17 @@ type Msg
     | ChangeFontSize String
     | ChangeSpeed String
     | UpdateFrame Float
+    | ChangePauseMode PauseModes
+    | ResetTele
 
 toTopAttribute : Float -> String
 toTopAttribute off =
     (String.fromInt (floor off)) ++ "px"
+calculateOffset : Model -> Float -> Float
+calculateOffset model deltaFrames =
+    model.offset + deltaFrames * (toFloat model.speed) / 1000
+buttonClass t isOn =
+    "btn-" ++ (if isOn == False then "outline-" else "") ++ t
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -57,7 +72,13 @@ update msg model =
         ChangeSpeed s ->
             { model | speed = (String.toInt s |> Maybe.withDefault 0) }
         UpdateFrame d ->
-            { model | offset = model.offset + d * (toFloat model.speed) / 1000 }
+            case model.pauseMode of
+                Pause -> model
+                Play -> { model | offset = calculateOffset model d }
+        ChangePauseMode m ->
+            { model | pauseMode = m }
+        ResetTele ->
+            { model | offset = 0, pauseMode = Pause }
   , Cmd.none )
 
 
@@ -71,7 +92,7 @@ view model =
 
 renderNavs : Model -> Html Msg
 renderNavs model =
-    ul [ class "nav nav-pills" ]
+    ul [ class "nav nav-pills p-1" ]
         [ li [ class "nav-item" ]
             [ a
                 [ class "nav-link"
@@ -89,7 +110,7 @@ renderNavs model =
                 [ text "Edit" ]
             ]
         , li []
-             [ div [ class "input-group" ]
+             [ div [ class "input-group mx-1" ]
                    [ div [ class "input-group-prepend" ]
                      [ span [ class "input-group-text" ]
                             [ text " Font Size: "]
@@ -104,7 +125,7 @@ renderNavs model =
                    ]
              ]
          , li []
-              [ div [ class "input-group" ]
+              [ div [ class "input-group mx-1" ]
                     [ div [ class "input-group-prepend" ]
                           [ span [ class "input-group-text" ]
                                  [ text " Speed: "]
@@ -118,6 +139,23 @@ renderNavs model =
                             []
                     ]
               ]
+          , button
+              [ class ("btn mx-1 " ++
+                       (buttonClass "primary" (model.pauseMode == Play)))
+              , onClick (ChangePauseMode Play)
+              ]
+              [ text "Play" ]
+          , button
+              [ class ("btn mx-1 " ++
+                       (buttonClass "secondary" (model.pauseMode == Pause)))
+              , onClick (ChangePauseMode Pause)
+              ]
+              [ text "Pause" ]
+          , button
+              [ class ("btn mx-5 btn-sm" )
+              , onClick (ResetTele)
+              ]
+              [ text "Reset" ]
         ]
 
 

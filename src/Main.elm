@@ -4,7 +4,8 @@ import Browser
 import Browser.Events
 import Html exposing (Html, a, button, div, input, li, span, text, textarea, ul)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, on)
+import Json.Decode as Json
 
 
 type EditModes
@@ -44,6 +45,10 @@ init _ =
     ( initialModel, Cmd.none )
 
 
+onWheel : (Int -> msg) -> Html.Attribute msg
+onWheel msg =
+  on "wheel" (Json.map msg (Json.at ["deltaY"] Json.int ))
+
 type Msg
     = ChangeEditMode EditModes
     | UpdateText String
@@ -53,6 +58,8 @@ type Msg
     | ChangePauseMode PauseModes
     | ResetTele
     | ChangePadding String
+    | MouseClick
+    | MouseWheel Int
 
 toTopAttribute : Float -> String
 toTopAttribute off =
@@ -84,6 +91,11 @@ update msg model =
             { model | offset = 0, pauseMode = Pause }
         ChangePadding p ->
             { model | padding = p }
+        MouseClick ->
+            { model | pauseMode =
+                (if model.pauseMode == Pause then Play else Pause) }
+        MouseWheel deltaY ->
+            { model | offset = model.offset + (toFloat deltaY) }
   , Cmd.none )
 
 
@@ -183,9 +195,13 @@ renderTextContent : Model -> Html Msg
 renderTextContent model =
     case model.editMode of
         Tele ->
-            div [ class "container-fluid" ]
+            div [ class "container-fluid"
+                , onClick MouseClick
+                , onWheel MouseWheel
+                ]
                 [ div [ class "row flex-grow-1 h-100"
                       , style "min-width" "100%"
+                      , style "overflow" "hidden"
                       , style "background-color" "black"
                       ]
                       [ textarea [ class "form-control"

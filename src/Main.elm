@@ -1,11 +1,12 @@
-module Main exposing (main)
+port module Main exposing (main)
 
 import Browser
 import Browser.Events
 import Html exposing (Html, a, button, div, input, li, span, text, textarea, ul)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, on)
-import Json.Decode as Json
+import Json.Decode as Decode
+import Json.Encode as Encode
 
 
 type EditModes
@@ -18,14 +19,22 @@ type PauseModes
     | Play
 
 
-type alias Model =
-    { editMode : EditModes
-    , text : String
+type alias PersistentModel ext =
+    { ext
+    | text : String
     , fontSize : String
     , speed : Int
+    , padding : String }
+constructPersistentModel :
+    (PersistentModel a) -> String -> String -> Int -> String
+    -> (PersistentModel a)
+constructPersistentModel a txt fs sp padd =
+    { a | text = txt, fontSize = fs, speed = sp, padding = padd }
+
+type alias Model = PersistentModel
+    { editMode : EditModes
     , offset : Float
     , pauseMode : PauseModes
-    , padding : String
     }
 
 
@@ -40,14 +49,17 @@ initialModel =
     , padding = "1"
     }
 
-init : () -> (Model, Cmd Msg)
-init _ =
-    ( initialModel, Cmd.none )
+init : (Maybe String) -> (Model, Cmd msg)
+init storedStateJson =
+    ( decodePersistentModel
+        initialModel (storedStateJson |> Maybe.withDefault "")
+    , Cmd.none
+    )
 
 
 onWheel : (Int -> msg) -> Html.Attribute msg
 onWheel msg =
-  on "wheel" (Json.map msg (Json.at ["deltaY"] Json.int ))
+  on "wheel" (Decode.map msg (Decode.at ["deltaY"] Decode.int))
 
 type Msg
     = ChangeEditMode EditModes
@@ -72,31 +84,36 @@ buttonClass t isOn =
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  ( case msg of
-        ChangeEditMode mode ->
-            { model | editMode = mode }
-        UpdateText txt ->
-            { model | text = txt }
-        ChangeFontSize s ->
-            { model | fontSize = s }
-        ChangeSpeed s ->
-            { model | speed = (String.toInt s |> Maybe.withDefault 0) }
-        UpdateFrame d ->
-            case model.pauseMode of
+  case msg of
+      ChangeEditMode mode ->
+          ( { model | editMode = mode }, encodePersistentModel True model )
+      UpdateText txt ->
+          ( { model | text = txt }, Cmd.none )
+      ChangeFontSize s ->
+          ( { model | fontSize = s }, Cmd.none )
+      ChangeSpeed s ->
+          ( { model | speed = (String.toInt s |> Maybe.withDefault 0) }
+          , Cmd.none
+          )
+      UpdateFrame d ->
+          ( case model.pauseMode of
                 Pause -> model
                 Play -> { model | offset = calculateOffset model d }
-        ChangePauseMode m ->
-            { model | pauseMode = m }
-        ResetTele ->
-            { model | offset = 0, pauseMode = Pause }
-        ChangePadding p ->
-            { model | padding = p }
-        MouseClick ->
-            { model | pauseMode =
+          , Cmd.none
+          )
+      ChangePauseMode m ->
+          ( { model | pauseMode = m }, encodePersistentModel False model )
+      ResetTele ->
+          ( { model | offset = 0, pauseMode = Pause }, Cmd.none )
+      ChangePadding p ->
+          ( { model | padding = p }, Cmd.none)
+      MouseClick ->
+          ( { model | pauseMode =
                 (if model.pauseMode == Pause then Play else Pause) }
-        MouseWheel deltaY ->
-            { model | offset = model.offset + (toFloat deltaY) }
-  , Cmd.none )
+          , Cmd.none
+          )
+      MouseWheel deltaY ->
+          ( { model | offset = model.offset - (toFloat deltaY) }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -247,3 +264,32 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
+
+
+port storePersistentModel : String -> Cmd msg
+encodePersistentModel : Bool -> PersistentModel model -> Cmd msg
+encodePersistentModel includingText model =
+    Encode.object [ ("fontSize", Encode.string model.fontSize)
+                  , ("speed", Encode.int model.speed)
+                  , ("padding", Encode.string model.padding)
+                  , ("text", Encode.string
+                                (if includingText then model.text else ""))
+                  ]
+    |> Encode.encode 0
+    |> storePersistentModel
+decodePersistentModel :
+    (PersistentModel model) -> String -> (PersistentModel model)
+decodePersistentModel model jsn =
+    case (Decode.decodeString
+             (Decode.map4
+                 (constructPersistentModel model)
+                 (Decode.at ["text"] Decode.string)
+                 (Decode.at ["parameters", "fontSize"] Decode.string)
+                 (Decode.at ["parameters", "speed"] Decode.int)
+                 (Decode.at ["parameters", "padding"] Decode.string)
+             )
+             jsn
+         ) of
+        Ok modelResult -> modelResult
+        _ -> (constructPersistentModel
+                model "Press Edit to put your text here." "24" 0 "1")

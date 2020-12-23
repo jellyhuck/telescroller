@@ -23,7 +23,7 @@
         let parsed = JSON.parse(params);
         if (parsed.text) {
           localStorage.setItem('telescroller-text', parsed.text);
-          parser.text = "";
+          parsed.text = "";
         }
         localStorage.setItem('telescroller-parameters', params);
     });

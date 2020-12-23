@@ -78,7 +78,7 @@ toTopAttribute off =
     (String.fromInt (floor off)) ++ "px"
 calculateOffset : Model -> Float -> Float
 calculateOffset model deltaFrames =
-    model.offset + deltaFrames * (toFloat model.speed) / 1000
+    model.offset - deltaFrames * (toFloat model.speed) / 1000
 buttonClass t isOn =
     "btn-" ++ (if isOn == False then "outline-" else "") ++ t
 

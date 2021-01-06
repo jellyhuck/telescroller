@@ -57,9 +57,9 @@ init storedStateJson =
     )
 
 
-onWheel : (Int -> msg) -> Html.Attribute msg
-onWheel msg =
-  on "wheel" (Decode.map msg (Decode.at ["deltaY"] Decode.int))
+onWheel : (Maybe Float -> msg) -> Html.Attribute msg
+onWheel a =
+  on "wheel" (Decode.map a (Decode.maybe (Decode.at ["deltaY"] Decode.float)))
 
 type Msg
     = ChangeEditMode EditModes
@@ -71,7 +71,7 @@ type Msg
     | ResetTele
     | ChangePadding String
     | MouseClick
-    | MouseWheel Int
+    | MouseWheel (Maybe Float)
 
 toTopAttribute : Float -> String
 toTopAttribute off =
@@ -112,8 +112,11 @@ update msg model =
                 (if model.pauseMode == Pause then Play else Pause) }
           , Cmd.none
           )
-      MouseWheel deltaY ->
-          ( { model | offset = model.offset - (toFloat deltaY) }, Cmd.none )
+      MouseWheel mayBeDeltaY ->
+          ( { model | offset =
+                model.offset - (mayBeDeltaY |> Maybe.withDefault 0)}
+            , Cmd.none
+          )
 
 
 view : Model -> Html Msg

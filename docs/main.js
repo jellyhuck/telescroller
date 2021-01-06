@@ -5476,11 +5476,13 @@ var $author$project$Main$update = F2(
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
-				var deltaY = msg.a;
+				var mayBeDeltaY = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{t: model.t - deltaY}),
+						{
+							t: model.t - A2($elm$core$Maybe$withDefault, 0, mayBeDeltaY)
+						}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -5838,18 +5840,28 @@ var $author$project$Main$MouseWheel = function (a) {
 var $author$project$Main$UpdateText = function (a) {
 	return {$: 1, a: a};
 };
-var $author$project$Main$onWheel = function (msg) {
+var $elm$json$Json$Decode$float = _Json_decodeFloat;
+var $elm$json$Json$Decode$maybe = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
+				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+			]));
+};
+var $author$project$Main$onWheel = function (a) {
 	return A2(
 		$elm$html$Html$Events$on,
 		'wheel',
 		A2(
 			$elm$json$Json$Decode$map,
-			msg,
-			A2(
-				$elm$json$Json$Decode$at,
-				_List_fromArray(
-					['deltaY']),
-				$elm$json$Json$Decode$int)));
+			a,
+			$elm$json$Json$Decode$maybe(
+				A2(
+					$elm$json$Json$Decode$at,
+					_List_fromArray(
+						['deltaY']),
+					$elm$json$Json$Decode$float))));
 };
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$html$Html$Attributes$boolProperty = F2(

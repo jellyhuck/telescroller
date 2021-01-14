@@ -24,13 +24,15 @@ type alias PersistentModel ext =
     | text : String
     , fontSize : String
     , speed : Int
+    , manualSpeed: Int
     , padding : String
     }
 constructPersistentModel :
-    (PersistentModel a) -> String -> String -> Int -> String
+    (PersistentModel a) -> String -> String -> Int -> Int -> String
     -> (PersistentModel a)
-constructPersistentModel a txt fs sp padd =
-    { a | text = txt, fontSize = fs, speed = sp, padding = padd }
+constructPersistentModel a txt fs sp msp padd =
+    { a | text = txt, fontSize = fs, speed = sp, manualSpeed = msp
+          , padding = padd }
 
 type alias Model = PersistentModel
     { editMode : EditModes
@@ -45,6 +47,7 @@ initialModel =
     , text = ""
     , fontSize = "24"
     , speed = 0
+    , manualSpeed = 0
     , offset = 0.0
     , pauseMode = Pause
     , padding = "1"
@@ -67,6 +70,7 @@ type Msg
     | UpdateText String
     | ChangeFontSize String
     | ChangeSpeed String
+    | ChangeManualSpeed String
     | UpdateFrame Float
     | ChangePauseMode PauseModes
     | ResetTele
@@ -82,6 +86,14 @@ calculateOffset model deltaFrames =
     model.offset - deltaFrames * (toFloat model.speed) / 1000
 buttonClass t isOn =
     "btn-" ++ (if isOn == False then "outline-" else "") ++ t
+sign : Float -> Int
+sign f =
+  if f >= 0 then 1 else -1
+calculateDelta : Maybe Float -> Int -> Float
+calculateDelta mayBeDeltaY manualSpeed =
+    let
+        d = mayBeDeltaY |> Maybe.withDefault 0
+    in if manualSpeed > 0 then (toFloat (manualSpeed * sign(d))) else d
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -96,6 +108,10 @@ update msg model =
           ( { model | speed = (String.toInt s |> Maybe.withDefault 0) }
           , Cmd.none
           )
+      ChangeManualSpeed s ->
+          ( { model | manualSpeed = (String.toInt s |> Maybe.withDefault 0) }
+          , Cmd.none
+          )
       UpdateFrame d ->
           ( case model.pauseMode of
                 Pause -> model
@@ -105,7 +121,9 @@ update msg model =
       ChangePauseMode m ->
           ( { model | pauseMode = m }, encodePersistentModel False model )
       ResetTele ->
-          ( { model | offset = 0, pauseMode = Pause }, Cmd.none )
+          ( { model | offset = 0, pauseMode = Pause }
+          , encodePersistentModel False model
+          )
       ChangePadding p ->
           ( { model | padding = p }, Cmd.none)
       MouseClick ->
@@ -115,7 +133,7 @@ update msg model =
           )
       MouseWheel mayBeDeltaY ->
           ( { model | offset =
-                model.offset - (mayBeDeltaY |> Maybe.withDefault 0)}
+                model.offset - calculateDelta mayBeDeltaY model.manualSpeed }
             , Cmd.none
           )
 
@@ -177,6 +195,21 @@ renderNavs model =
                             []
                     ]
               ]
+          , li []
+               [ div [ class "input-group mx-1" ]
+               [ div [ class "input-group-prepend" ]
+                     [ span [ class "input-group-text" ]
+                            [ text " Manual Speed: "]
+                     ]
+               , input [ type_ "number"
+                       , Html.Attributes.min "0"
+                       , Html.Attributes.max "100"
+                       , value (String.fromInt model.manualSpeed)
+                       , onInput ChangeManualSpeed
+                       ]
+                       []
+               ]
+          ]
           , li []
                [ div [ class "input-group mx-1" ]
                      [ div [ class "input-group-prepend" ]
@@ -282,6 +315,7 @@ encodePersistentModel : Bool -> PersistentModel model -> Cmd msg
 encodePersistentModel includingText model =
     Encode.object [ ("fontSize", Encode.string model.fontSize)
                   , ("speed", Encode.int model.speed)
+                  , ("manualSpeed", Encode.int model.manualSpeed)
                   , ("padding", Encode.string model.padding)
                   , ("text", Encode.string
                                 (if includingText then model.text else ""))
@@ -292,15 +326,16 @@ decodePersistentModel :
     (PersistentModel model) -> String -> (PersistentModel model)
 decodePersistentModel model jsn =
     case (Decode.decodeString
-             (Decode.map4
+             (Decode.map5
                  (constructPersistentModel model)
                  (Decode.at ["text"] Decode.string)
                  (Decode.at ["parameters", "fontSize"] Decode.string)
                  (Decode.at ["parameters", "speed"] Decode.int)
+                 (Decode.at ["parameters", "manualSpeed"] Decode.int)
                  (Decode.at ["parameters", "padding"] Decode.string)
              )
              jsn
          ) of
         Ok modelResult -> modelResult
         _ -> (constructPersistentModel
-                model "Press Edit to put your text here." "24" 0 "1")
+                model "Press Edit to put your text here." "24" 0 0 "1")

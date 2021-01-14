@@ -784,11 +784,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.P.G === region.U.G)
+	if (region.Q.H === region.V.H)
 	{
-		return 'on line ' + region.P.G;
+		return 'on line ' + region.Q.H;
 	}
-	return 'on lines ' + region.P.G + ' through ' + region.U.G;
+	return 'on lines ' + region.Q.H + ' through ' + region.V.H;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.az,
-		impl.aH,
-		impl.aF,
+		impl.aA,
+		impl.aI,
+		impl.aG,
 		function() { return function() {} }
 	);
 });
@@ -2705,8 +2705,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		o: func(record.o),
-		Q: record.Q,
-		N: record.N
+		R: record.R,
+		O: record.O
 	}
 });
 
@@ -2975,10 +2975,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.o;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.Q;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.R;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.N) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.O) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3928,11 +3928,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.az,
-		impl.aH,
-		impl.aF,
+		impl.aA,
+		impl.aI,
+		impl.aG,
 		function(sendToApp, initialModel) {
-			var view = impl.aI;
+			var view = impl.aJ;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3964,12 +3964,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.az,
-		impl.aH,
-		impl.aF,
+		impl.aA,
+		impl.aI,
+		impl.aG,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.O && impl.O(sendToApp)
-			var view = impl.aI;
+			var divertHrefToApp = impl.P && impl.P(sendToApp)
+			var view = impl.aJ;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3977,12 +3977,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.as);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.at);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aG) && (_VirtualDom_doc.title = title = doc.aG);
+				(title !== doc.aH) && (_VirtualDom_doc.title = title = doc.aH);
 			});
 		}
 	);
@@ -4038,12 +4038,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aB;
-	var onUrlRequest = impl.aC;
+	var onUrlChange = impl.aC;
+	var onUrlRequest = impl.aD;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		O: function(sendToApp)
+		P: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4059,9 +4059,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.af === next.af
-							&& curr.Y === next.Y
-							&& curr.ac.a === next.ac.a
+							&& curr.ag === next.ag
+							&& curr.Z === next.Z
+							&& curr.ad.a === next.ad.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4069,13 +4069,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		az: function(flags)
+		aA: function(flags)
 		{
-			return A3(impl.az, flags, _Browser_getUrl(), key);
+			return A3(impl.aA, flags, _Browser_getUrl(), key);
 		},
+		aJ: impl.aJ,
 		aI: impl.aI,
-		aH: impl.aH,
-		aF: impl.aF
+		aG: impl.aG
 	});
 }
 
@@ -4141,17 +4141,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { ax: 'hidden', at: 'visibilitychange' }
+		? { ay: 'hidden', au: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { ax: 'mozHidden', at: 'mozvisibilitychange' }
+		? { ay: 'mozHidden', au: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { ax: 'msHidden', at: 'msvisibilitychange' }
+		? { ay: 'msHidden', au: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { ax: 'webkitHidden', at: 'webkitvisibilitychange' }
-		: { ax: 'hidden', at: 'visibilitychange' };
+		? { ay: 'webkitHidden', au: 'webkitvisibilitychange' }
+		: { ay: 'hidden', au: 'visibilitychange' };
 }
 
 
@@ -4232,12 +4232,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		aj: _Browser_getScene(),
-		am: {
-			ao: _Browser_window.pageXOffset,
-			ap: _Browser_window.pageYOffset,
-			an: _Browser_doc.documentElement.clientWidth,
-			X: _Browser_doc.documentElement.clientHeight
+		ak: _Browser_getScene(),
+		an: {
+			ap: _Browser_window.pageXOffset,
+			aq: _Browser_window.pageYOffset,
+			ao: _Browser_doc.documentElement.clientWidth,
+			Y: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4247,8 +4247,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		an: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		X: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		ao: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		Y: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4271,15 +4271,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			aj: {
-				an: node.scrollWidth,
-				X: node.scrollHeight
+			ak: {
+				ao: node.scrollWidth,
+				Y: node.scrollHeight
 			},
-			am: {
-				ao: node.scrollLeft,
-				ap: node.scrollTop,
-				an: node.clientWidth,
-				X: node.clientHeight
+			an: {
+				ap: node.scrollLeft,
+				aq: node.scrollTop,
+				ao: node.clientWidth,
+				Y: node.clientHeight
 			}
 		};
 	});
@@ -4309,18 +4309,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			aj: _Browser_getScene(),
-			am: {
-				ao: x,
-				ap: y,
-				an: _Browser_doc.documentElement.clientWidth,
-				X: _Browser_doc.documentElement.clientHeight
+			ak: _Browser_getScene(),
+			an: {
+				ap: x,
+				aq: y,
+				ao: _Browser_doc.documentElement.clientWidth,
+				Y: _Browser_doc.documentElement.clientHeight
 			},
-			av: {
-				ao: x + rect.left,
-				ap: y + rect.top,
-				an: rect.width,
-				X: rect.height
+			aw: {
+				ap: x + rect.left,
+				aq: y + rect.top,
+				ao: rect.width,
+				Y: rect.height
 			}
 		};
 	});
@@ -4859,7 +4859,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {W: fragment, Y: host, aa: path, ac: port_, af: protocol, ag: query};
+		return {X: fragment, Z: host, ab: path, ad: port_, ag: protocol, ah: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5143,22 +5143,22 @@ var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
-var $author$project$Main$constructPersistentModel = F5(
-	function (a, txt, fs, sp, padd) {
+var $author$project$Main$constructPersistentModel = F6(
+	function (a, txt, fs, sp, msp, padd) {
 		return _Utils_update(
 			a,
-			{z: fs, u: padd, B: sp, C: txt});
+			{z: fs, A: msp, u: padd, C: sp, D: txt});
 	});
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Decode$map4 = _Json_map4;
+var $elm$json$Json$Decode$map5 = _Json_map5;
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Main$decodePersistentModel = F2(
 	function (model, jsn) {
 		var _v0 = A2(
 			$elm$json$Json$Decode$decodeString,
-			A5(
-				$elm$json$Json$Decode$map4,
+			A6(
+				$elm$json$Json$Decode$map5,
 				$author$project$Main$constructPersistentModel(model),
 				A2(
 					$elm$json$Json$Decode$at,
@@ -5178,6 +5178,11 @@ var $author$project$Main$decodePersistentModel = F2(
 				A2(
 					$elm$json$Json$Decode$at,
 					_List_fromArray(
+						['parameters', 'manualSpeed']),
+					$elm$json$Json$Decode$int),
+				A2(
+					$elm$json$Json$Decode$at,
+					_List_fromArray(
 						['parameters', 'padding']),
 					$elm$json$Json$Decode$string)),
 			jsn);
@@ -5185,12 +5190,12 @@ var $author$project$Main$decodePersistentModel = F2(
 			var modelResult = _v0.a;
 			return modelResult;
 		} else {
-			return A5($author$project$Main$constructPersistentModel, model, 'Press Edit to put your text here.', '24', 0, '1');
+			return A6($author$project$Main$constructPersistentModel, model, 'Press Edit to put your text here.', '24', 0, 0, '1');
 		}
 	});
 var $author$project$Main$Pause = 0;
 var $author$project$Main$Tele = 1;
-var $author$project$Main$initialModel = {F: 1, z: '24', t: 0.0, u: '1', p: 0, B: 0, C: ''};
+var $author$project$Main$initialModel = {G: 1, z: '24', A: 0, t: 0.0, u: '1', p: 0, C: 0, D: ''};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$Maybe$withDefault = F2(
@@ -5213,14 +5218,14 @@ var $author$project$Main$init = function (storedStateJson) {
 var $elm$json$Json$Decode$null = _Json_decodeNull;
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $author$project$Main$UpdateFrame = function (a) {
-	return {$: 4, a: a};
+	return {$: 5, a: a};
 };
 var $elm$browser$Browser$AnimationManager$Delta = function (a) {
 	return {$: 1, a: a};
 };
 var $elm$browser$Browser$AnimationManager$State = F3(
 	function (subs, request, oldTime) {
-		return {M: oldTime, ai: request, ak: subs};
+		return {N: oldTime, aj: request, al: subs};
 	});
 var $elm$browser$Browser$AnimationManager$init = $elm$core$Task$succeed(
 	A3($elm$browser$Browser$AnimationManager$State, _List_Nil, $elm$core$Maybe$Nothing, 0));
@@ -5231,8 +5236,8 @@ var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$core$Process$spawn = _Scheduler_spawn;
 var $elm$browser$Browser$AnimationManager$onEffects = F3(
 	function (router, subs, _v0) {
-		var request = _v0.ai;
-		var oldTime = _v0.M;
+		var request = _v0.aj;
+		var oldTime = _v0.N;
 		var _v1 = _Utils_Tuple2(request, subs);
 		if (_v1.a.$ === 1) {
 			if (!_v1.b.b) {
@@ -5280,8 +5285,8 @@ var $elm$time$Time$Posix = $elm$core$Basics$identity;
 var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
 var $elm$browser$Browser$AnimationManager$onSelfMsg = F3(
 	function (router, newTime, _v0) {
-		var subs = _v0.ak;
-		var oldTime = _v0.M;
+		var subs = _v0.al;
+		var oldTime = _v0.N;
 		var send = function (sub) {
 			if (!sub.$) {
 				var tagger = sub.a;
@@ -5351,9 +5356,21 @@ var $author$project$Main$subscriptions = function (model) {
 	return $elm$browser$Browser$Events$onAnimationFrameDelta($author$project$Main$UpdateFrame);
 };
 var $author$project$Main$Play = 1;
+var $elm$core$Basics$ge = _Utils_ge;
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $author$project$Main$sign = function (f) {
+	return (f >= 0) ? 1 : (-1);
+};
+var $author$project$Main$calculateDelta = F2(
+	function (mayBeDeltaY, manualSpeed) {
+		var d = A2($elm$core$Maybe$withDefault, 0, mayBeDeltaY);
+		return (manualSpeed > 0) ? (manualSpeed * $author$project$Main$sign(d)) : d;
+	});
 var $author$project$Main$calculateOffset = F2(
 	function (model, deltaFrames) {
-		return model.t - ((deltaFrames * model.B) / 1000);
+		return model.t - ((deltaFrames * model.C) / 1000);
 	});
 var $elm$json$Json$Encode$int = _Json_wrap;
 var $elm$json$Json$Encode$object = function (pairs) {
@@ -5385,14 +5402,17 @@ var $author$project$Main$encodePersistentModel = F2(
 							$elm$json$Json$Encode$string(model.z)),
 							_Utils_Tuple2(
 							'speed',
-							$elm$json$Json$Encode$int(model.B)),
+							$elm$json$Json$Encode$int(model.C)),
+							_Utils_Tuple2(
+							'manualSpeed',
+							$elm$json$Json$Encode$int(model.A)),
 							_Utils_Tuple2(
 							'padding',
 							$elm$json$Json$Encode$string(model.u)),
 							_Utils_Tuple2(
 							'text',
 							$elm$json$Json$Encode$string(
-								includingText ? model.C : ''))
+								includingText ? model.D : ''))
 						]))));
 	});
 var $author$project$Main$update = F2(
@@ -5403,14 +5423,14 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{F: mode}),
+						{G: mode}),
 					A2($author$project$Main$encodePersistentModel, true, model));
 			case 1:
 				var txt = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{C: txt}),
+						{D: txt}),
 					$elm$core$Platform$Cmd$none);
 			case 2:
 				var s = msg.a;
@@ -5425,13 +5445,25 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							B: A2(
+							C: A2(
 								$elm$core$Maybe$withDefault,
 								0,
 								$elm$core$String$toInt(s))
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 4:
+				var s = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							A: A2(
+								$elm$core$Maybe$withDefault,
+								0,
+								$elm$core$String$toInt(s))
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 5:
 				var d = msg.a;
 				return _Utils_Tuple2(
 					function () {
@@ -5447,27 +5479,27 @@ var $author$project$Main$update = F2(
 						}
 					}(),
 					$elm$core$Platform$Cmd$none);
-			case 5:
+			case 6:
 				var m = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{p: m}),
 					A2($author$project$Main$encodePersistentModel, false, model));
-			case 6:
+			case 7:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{t: 0, p: 0}),
-					$elm$core$Platform$Cmd$none);
-			case 7:
+					A2($author$project$Main$encodePersistentModel, false, model));
+			case 8:
 				var p = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{u: p}),
 					$elm$core$Platform$Cmd$none);
-			case 8:
+			case 9:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -5481,7 +5513,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							t: model.t - A2($elm$core$Maybe$withDefault, 0, mayBeDeltaY)
+							t: model.t - A2($author$project$Main$calculateDelta, mayBeDeltaY, model.A)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -5493,17 +5525,20 @@ var $author$project$Main$ChangeEditMode = function (a) {
 var $author$project$Main$ChangeFontSize = function (a) {
 	return {$: 2, a: a};
 };
+var $author$project$Main$ChangeManualSpeed = function (a) {
+	return {$: 4, a: a};
+};
 var $author$project$Main$ChangePadding = function (a) {
-	return {$: 7, a: a};
+	return {$: 8, a: a};
 };
 var $author$project$Main$ChangePauseMode = function (a) {
-	return {$: 5, a: a};
+	return {$: 6, a: a};
 };
 var $author$project$Main$ChangeSpeed = function (a) {
 	return {$: 3, a: a};
 };
 var $author$project$Main$Edit = 0;
-var $author$project$Main$ResetTele = {$: 6};
+var $author$project$Main$ResetTele = {$: 7};
 var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $author$project$Main$buttonClass = F2(
@@ -5624,7 +5659,7 @@ var $author$project$Main$renderNavs = function (model) {
 								$elm$html$Html$Attributes$classList(
 								_List_fromArray(
 									[
-										_Utils_Tuple2('active', model.F === 1)
+										_Utils_Tuple2('active', model.G === 1)
 									]))
 							]),
 						_List_fromArray(
@@ -5650,7 +5685,7 @@ var $author$project$Main$renderNavs = function (model) {
 								$elm$html$Html$Attributes$classList(
 								_List_fromArray(
 									[
-										_Utils_Tuple2('active', !model.F)
+										_Utils_Tuple2('active', !model.G)
 									]))
 							]),
 						_List_fromArray(
@@ -5743,8 +5778,54 @@ var $author$project$Main$renderNavs = function (model) {
 										$elm$html$Html$Attributes$min('0'),
 										$elm$html$Html$Attributes$max('100'),
 										$elm$html$Html$Attributes$value(
-										$elm$core$String$fromInt(model.B)),
+										$elm$core$String$fromInt(model.C)),
 										$elm$html$Html$Events$onInput($author$project$Main$ChangeSpeed)
+									]),
+								_List_Nil)
+							]))
+					])),
+				A2(
+				$elm$html$Html$li,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('input-group mx-1')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('input-group-prepend')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$span,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('input-group-text')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text(' Manual Speed: ')
+											]))
+									])),
+								A2(
+								$elm$html$Html$input,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$type_('number'),
+										$elm$html$Html$Attributes$min('0'),
+										$elm$html$Html$Attributes$max('100'),
+										$elm$html$Html$Attributes$value(
+										$elm$core$String$fromInt(model.A)),
+										$elm$html$Html$Events$onInput($author$project$Main$ChangeManualSpeed)
 									]),
 								_List_Nil)
 							]))
@@ -5833,9 +5914,9 @@ var $author$project$Main$renderNavs = function (model) {
 					]))
 			]));
 };
-var $author$project$Main$MouseClick = {$: 8};
+var $author$project$Main$MouseClick = {$: 9};
 var $author$project$Main$MouseWheel = function (a) {
-	return {$: 9, a: a};
+	return {$: 10, a: a};
 };
 var $author$project$Main$UpdateText = function (a) {
 	return {$: 1, a: a};
@@ -5880,7 +5961,7 @@ var $author$project$Main$toPxAttribute = function (off) {
 		$elm$core$Basics$floor(off)) + 'px';
 };
 var $author$project$Main$renderTextContent = function (model) {
-	var _v0 = model.F;
+	var _v0 = model.G;
 	if (_v0 === 1) {
 		return A2(
 			$elm$html$Html$div,
@@ -5934,7 +6015,7 @@ var $author$project$Main$renderTextContent = function (model) {
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text(model.C)
+									$elm$html$Html$text(model.D)
 								]))
 						]))
 				]));
@@ -5955,7 +6036,7 @@ var $author$project$Main$renderTextContent = function (model) {
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text(model.C)
+							$elm$html$Html$text(model.D)
 						]))
 				]));
 	}
@@ -5971,7 +6052,7 @@ var $author$project$Main$view = function (model) {
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
-	{az: $author$project$Main$init, aF: $author$project$Main$subscriptions, aH: $author$project$Main$update, aI: $author$project$Main$view});
+	{aA: $author$project$Main$init, aG: $author$project$Main$subscriptions, aI: $author$project$Main$update, aJ: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$oneOf(
 		_List_fromArray(

@@ -24,7 +24,8 @@ type alias PersistentModel ext =
     | text : String
     , fontSize : String
     , speed : Int
-    , padding : String }
+    , padding : String
+    }
 constructPersistentModel :
     (PersistentModel a) -> String -> String -> Int -> String
     -> (PersistentModel a)
@@ -73,8 +74,8 @@ type Msg
     | MouseClick
     | MouseWheel (Maybe Float)
 
-toTopAttribute : Float -> String
-toTopAttribute off =
+toPxAttribute : Float -> String
+toPxAttribute off =
     (String.fromInt (floor off)) ++ "px"
 calculateOffset : Model -> Float -> Float
 calculateOffset model deltaFrames =
@@ -184,7 +185,7 @@ renderNavs model =
                            ]
                      , input [ type_ "number"
                              , Html.Attributes.min "0"
-                             , Html.Attributes.max "50"
+                             , Html.Attributes.max "500"
                              , value model.padding
                              , onInput ChangePadding
                              ]
@@ -216,30 +217,37 @@ renderTextContent model =
     case model.editMode of
         Tele ->
             div [ class "container-fluid"
+                , style "contenteditable" "true"
                 , onClick MouseClick
                 , onWheel MouseWheel
                 ]
                 [ div [ class "row flex-grow-1 h-100"
                       , style "min-width" "100%"
+                      , style "contenteditable" "true"
+                      , style "min-height" "90%"
                       , style "overflow" "hidden"
                       , style "background-color" "black"
                       ]
-                      [ textarea [ class "form-control"
-                                 , style "font-size" model.fontSize
-                                 , style "background-color" "black"
-                                 , style "height" "90%"
-                                 , style "color" "white"
-                                 , style "border" "none"
-                                 , style "overflow" "auto"
-                                 , style "outline" "none"
-                                 , style "resize" "none"
-                                 , style "box-shadow" "none"
-                                 , style "position" "relative"
-                                 , style "margin-left" (model.padding ++ "px")
-                                 , style "top" (toTopAttribute model.offset)
-                                 , readonly True
-                                 ]
-                                 [ text model.text ]
+                      [ div [ class "form-control"
+                            , style "font-size" model.fontSize
+                            , style "white-space" "pre-wrap"
+                            , style "background-color" "black"
+                            , style "contenteditable" "true"
+                            , style "height" "auto"
+                            , style "color" "white"
+                            , style "border" "none"
+                            , style "box-sizing" "border-box"
+                            , style "overflow" "hidden"
+                            , style "outline" "none"
+                            , style "resize" "none"
+                            , style "box-shadow" "none"
+                            , style "position" "relative"
+                            , style "margin-left" (model.padding ++ "px")
+                            , style "margin-right" (model.padding ++ "px")
+                            , style "top" (toPxAttribute model.offset)
+                            , readonly True
+                            ]
+                            [ text model.text ]
                       ]
                 ]
 

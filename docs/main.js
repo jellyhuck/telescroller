@@ -5147,7 +5147,7 @@ var $author$project$Main$constructPersistentModel = F5(
 	function (a, txt, fs, sp, padd) {
 		return _Utils_update(
 			a,
-			{y: fs, z: padd, B: sp, C: txt});
+			{z: fs, u: padd, B: sp, C: txt});
 	});
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
@@ -5190,7 +5190,7 @@ var $author$project$Main$decodePersistentModel = F2(
 	});
 var $author$project$Main$Pause = 0;
 var $author$project$Main$Tele = 1;
-var $author$project$Main$initialModel = {F: 1, y: '24', t: 0.0, z: '1', p: 0, B: 0, C: ''};
+var $author$project$Main$initialModel = {F: 1, z: '24', t: 0.0, u: '1', p: 0, B: 0, C: ''};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$Maybe$withDefault = F2(
@@ -5382,13 +5382,13 @@ var $author$project$Main$encodePersistentModel = F2(
 						[
 							_Utils_Tuple2(
 							'fontSize',
-							$elm$json$Json$Encode$string(model.y)),
+							$elm$json$Json$Encode$string(model.z)),
 							_Utils_Tuple2(
 							'speed',
 							$elm$json$Json$Encode$int(model.B)),
 							_Utils_Tuple2(
 							'padding',
-							$elm$json$Json$Encode$string(model.z)),
+							$elm$json$Json$Encode$string(model.u)),
 							_Utils_Tuple2(
 							'text',
 							$elm$json$Json$Encode$string(
@@ -5417,7 +5417,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{y: s}),
+						{z: s}),
 					$elm$core$Platform$Cmd$none);
 			case 3:
 				var s = msg.a;
@@ -5465,7 +5465,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{z: p}),
+						{u: p}),
 					$elm$core$Platform$Cmd$none);
 			case 8:
 				return _Utils_Tuple2(
@@ -5697,7 +5697,7 @@ var $author$project$Main$renderNavs = function (model) {
 										$elm$html$Html$Attributes$type_('number'),
 										$elm$html$Html$Attributes$min('1'),
 										$elm$html$Html$Attributes$max('120'),
-										$elm$html$Html$Attributes$value(model.y),
+										$elm$html$Html$Attributes$value(model.z),
 										$elm$html$Html$Events$onInput($author$project$Main$ChangeFontSize)
 									]),
 								_List_Nil)
@@ -5787,8 +5787,8 @@ var $author$project$Main$renderNavs = function (model) {
 									[
 										$elm$html$Html$Attributes$type_('number'),
 										$elm$html$Html$Attributes$min('0'),
-										$elm$html$Html$Attributes$max('50'),
-										$elm$html$Html$Attributes$value(model.z),
+										$elm$html$Html$Attributes$max('500'),
+										$elm$html$Html$Attributes$value(model.u),
 										$elm$html$Html$Events$onInput($author$project$Main$ChangePadding)
 									]),
 								_List_Nil)
@@ -5875,7 +5875,7 @@ var $elm$html$Html$Attributes$readonly = $elm$html$Html$Attributes$boolProperty(
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$html$Html$textarea = _VirtualDom_node('textarea');
-var $author$project$Main$toTopAttribute = function (off) {
+var $author$project$Main$toPxAttribute = function (off) {
 	return $elm$core$String$fromInt(
 		$elm$core$Basics$floor(off)) + 'px';
 };
@@ -5887,6 +5887,7 @@ var $author$project$Main$renderTextContent = function (model) {
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$class('container-fluid'),
+					A2($elm$html$Html$Attributes$style, 'contenteditable', 'true'),
 					$elm$html$Html$Events$onClick($author$project$Main$MouseClick),
 					$author$project$Main$onWheel($author$project$Main$MouseWheel)
 				]),
@@ -5898,31 +5899,37 @@ var $author$project$Main$renderTextContent = function (model) {
 						[
 							$elm$html$Html$Attributes$class('row flex-grow-1 h-100'),
 							A2($elm$html$Html$Attributes$style, 'min-width', '100%'),
+							A2($elm$html$Html$Attributes$style, 'contenteditable', 'true'),
+							A2($elm$html$Html$Attributes$style, 'min-height', '90%'),
 							A2($elm$html$Html$Attributes$style, 'overflow', 'hidden'),
 							A2($elm$html$Html$Attributes$style, 'background-color', 'black')
 						]),
 					_List_fromArray(
 						[
 							A2(
-							$elm$html$Html$textarea,
+							$elm$html$Html$div,
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('form-control'),
-									A2($elm$html$Html$Attributes$style, 'font-size', model.y),
+									A2($elm$html$Html$Attributes$style, 'font-size', model.z),
+									A2($elm$html$Html$Attributes$style, 'white-space', 'pre-wrap'),
 									A2($elm$html$Html$Attributes$style, 'background-color', 'black'),
-									A2($elm$html$Html$Attributes$style, 'height', '90%'),
+									A2($elm$html$Html$Attributes$style, 'contenteditable', 'true'),
+									A2($elm$html$Html$Attributes$style, 'height', 'auto'),
 									A2($elm$html$Html$Attributes$style, 'color', 'white'),
 									A2($elm$html$Html$Attributes$style, 'border', 'none'),
-									A2($elm$html$Html$Attributes$style, 'overflow', 'auto'),
+									A2($elm$html$Html$Attributes$style, 'box-sizing', 'border-box'),
+									A2($elm$html$Html$Attributes$style, 'overflow', 'hidden'),
 									A2($elm$html$Html$Attributes$style, 'outline', 'none'),
 									A2($elm$html$Html$Attributes$style, 'resize', 'none'),
 									A2($elm$html$Html$Attributes$style, 'box-shadow', 'none'),
 									A2($elm$html$Html$Attributes$style, 'position', 'relative'),
-									A2($elm$html$Html$Attributes$style, 'margin-left', model.z + 'px'),
+									A2($elm$html$Html$Attributes$style, 'margin-left', model.u + 'px'),
+									A2($elm$html$Html$Attributes$style, 'margin-right', model.u + 'px'),
 									A2(
 									$elm$html$Html$Attributes$style,
 									'top',
-									$author$project$Main$toTopAttribute(model.t)),
+									$author$project$Main$toPxAttribute(model.t)),
 									$elm$html$Html$Attributes$readonly(true)
 								]),
 							_List_fromArray(
